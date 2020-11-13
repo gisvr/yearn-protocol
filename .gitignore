@@ -4,3 +4,7 @@ __pycache__
 build/
 reports/
 node_modules/
+.github/*
+.idea/
+
+.openzeppelin/.session
