@@ -1,122 +1,29 @@
 /**
  *Submitted for verification at Etherscan.io on 2020-02-12
+ https://etherscan.io/address/0x83f798e925bcd4017eb265844fddabb448f1707d#code
 */
 
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+
 
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
-
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 
-contract ERC20 is Context, IERC20 {
-    using SafeMath for uint256;
+import "./ERC20.sol";
+import "../interfaces/compound.sol";
+import "../interfaces/aave.sol";
+import "../interfaces/fulcrum.sol";
 
-    mapping (address => uint256) _balances;
 
-    mapping (address => mapping (address => uint256)) private _allowances;
-
-    uint256 _totalSupply;
-    function totalSupply() public view returns (uint256) {
-        return _totalSupply;
-    }
-    function balanceOf(address account) public view returns (uint256) {
-        return _balances[account];
-    }
-    function transfer(address recipient, uint256 amount) public returns (bool) {
-        _transfer(_msgSender(), recipient, amount);
-        return true;
-    }
-    function allowance(address owner, address spender) public view returns (uint256) {
-        return _allowances[owner][spender];
-    }
-    function approve(address spender, uint256 amount) public returns (bool) {
-        _approve(_msgSender(), spender, amount);
-        return true;
-    }
-    function transferFrom(address sender, address recipient, uint256 amount) public returns (bool) {
-        _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
-        return true;
-    }
-    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
-        return true;
-    }
-    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
-        return true;
-    }
-    function _transfer(address sender, address recipient, uint256 amount) internal {
-        require(sender != address(0), "ERC20: transfer from the zero address");
-        require(recipient != address(0), "ERC20: transfer to the zero address");
-
-        _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
-        _balances[recipient] = _balances[recipient].add(amount);
-        emit Transfer(sender, recipient, amount);
-    }
-    function _mint(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20: mint to the zero address");
-
-        _totalSupply = _totalSupply.add(amount);
-        _balances[account] = _balances[account].add(amount);
-        emit Transfer(address(0), account, amount);
-    }
-    function _burn(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20: burn from the zero address");
-
-        _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
-        _totalSupply = _totalSupply.sub(amount);
-        emit Transfer(account, address(0), amount);
-    }
-    function _approve(address owner, address spender, uint256 amount) internal {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
-
-        _allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
-    }
-    function _burnFrom(address account, uint256 amount) internal {
-        _burn(account, amount);
-        _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "ERC20: burn amount exceeds allowance"));
-    }
-}
 //-------------------------
-interface Compound {
-    function mint(uint256 mintAmount) external returns (uint256);
-
-    function redeem(uint256 redeemTokens) external returns (uint256);
-
-    function exchangeRateStored() external view returns (uint);
-}
-
-interface Fulcrum {
-    function mint(address receiver, uint256 amount) external payable returns (uint256 mintAmount);
-
-    function burn(address receiver, uint256 burnAmount) external returns (uint256 loanAmountPaid);
-
-    function assetBalanceOf(address _owner) external view returns (uint256 balance);
-}
-
-interface ILendingPoolAddressesProvider {
-    function getLendingPool() external view returns (address);
-}
-
-interface Aave {
-    function deposit(address _reserve, uint256 _amount, uint16 _referralCode) external;
-}
-
-interface AToken {
-    function redeem(uint256 amount) external;
-}
 
 interface IIEarnManager {
     function recommend(address _token) external view returns (
@@ -181,11 +88,6 @@ contract DyDx is Structs {
     function operate(Info[] memory, ActionArgs[] memory) public;
 }
 
-interface LendingPoolAddressesProvider {
-    function getLendingPool() external view returns (address);
-
-    function getLendingPoolCore() external view returns (address);
-}
 
 contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
     using SafeERC20 for IERC20;
@@ -213,15 +115,25 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
     Lender public provider = Lender.NONE;
 
     constructor () public ERC20Detailed("iearn USDT", "yUSDT", 6) {
+        //Tether USD USDT
         token = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
+        // IEarnAPRWithPool
         apr = address(0xdD6d648C991f7d47454354f4Ef326b04025a48A8);
+        //dydx SoloMargin
         dydx = address(0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e);
+        //LendingPoolAddressesProvider
         aave = address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8);
+        // Fulcrum USDC iToken iUSDC
         fulcrum = address(0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f);
+        // AToken-》 aUSDT
         aaveToken = address(0x71fc860F7D3A592A4a98740e39dB31d25db65ae8);
-        compound = address(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
-        dToken = 0;
-//        approveToken();
+        // Compound USD Coin cUSDC
+//        compound = address(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
+        // Compound USDT -》cUSDT
+        compound = address(0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9);
+
+        dToken = 0; // 市场id
+        approveToken();
     }
 
     // Ownable setters incase of support in future for these systems
@@ -375,7 +287,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         IERC20(token).safeApprove(compound, uint(- 1));
         //also add to constructor
         IERC20(token).safeApprove(dydx, uint(- 1));
-        IERC20(token).safeApprove(getAaveCore(), uint(- 1));
+        // IERC20(token).safeApprove(getAaveCore(), uint(- 1)); aave 需要获取代理地址
         IERC20(token).safeApprove(fulcrum, uint(- 1));
     }
 
