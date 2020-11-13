@@ -5,4 +5,10 @@ interface Fulcrum {
     function burn(address receiver, uint256 burnAmount) external returns (uint256 loanAmountPaid);
 
     function assetBalanceOf(address _owner) external view returns (uint256 balance);
+
+
+    //--------oracle --------
+    function supplyInterestRate() external view returns (uint256);
+
+    function nextSupplyInterestRate(uint256 supplyAmount) external view returns (uint256);
 }

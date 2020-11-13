@@ -1,5 +1,5 @@
 /**
- *Submitted for verification at Etherscan.io on 2020-02-12
+ *Submitted for verification at Etherscan.io on 2020-02-12 v2
  https://etherscan.io/address/0x83f798e925bcd4017eb265844fddabb448f1707d#code
 */
 
@@ -22,8 +22,6 @@ import "../interfaces/compound.sol";
 import "../interfaces/aave.sol";
 import "../interfaces/fulcrum.sol";
 
-
-//-------------------------
 
 interface IIEarnManager {
     function recommend(address _token) external view returns (
@@ -128,12 +126,13 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         // AToken-》 aUSDT
         aaveToken = address(0x71fc860F7D3A592A4a98740e39dB31d25db65ae8);
         // Compound USD Coin cUSDC
-//        compound = address(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
+        //compound = address(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
         // Compound USDT -》cUSDT
         compound = address(0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9);
 
-        dToken = 0; // 市场id
-//        approveToken();
+        dToken = 0;
+        // 市场id
+        //  approveToken();
     }
 
     // Ownable setters incase of support in future for these systems
@@ -159,8 +158,10 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
     nonReentrant
     {
         require(_amount > 0, "deposit must be greater than 0");
+        // 累加合约地址拥有的token
         pool = _calcPoolValueInToken();
 
+        // 将msg.sender的USDT的转入合约，
         IERC20(token).safeTransferFrom(msg.sender, address(this), _amount);
 
         // Calculate pool shares
@@ -169,9 +170,12 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
             shares = _amount;
             pool = _amount;
         } else {
+            // （充值量* yUSDT量)/pool池子总量
             shares = (_amount.mul(_totalSupply)).div(pool);
         }
+        // 累加合约地址拥有的token，池量增加了充值
         pool = _calcPoolValueInToken();
+        //通过充值铸造 yUSDT
         _mint(msg.sender, shares);
     }
 
@@ -188,28 +192,35 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         // Could have over value from cTokens
         pool = _calcPoolValueInToken();
         // Calc to redeem before updating balances
+        // 计算用户在池中的拥有的量 (pool*shares) / totalSupply
         uint256 r = (pool.mul(_shares)).div(_totalSupply);
 
-
+        //更新 用户的体现后余额
         _balances[msg.sender] = _balances[msg.sender].sub(_shares, "redeem amount exceeds balance");
+
+        //在总量上减去 用户持有的股份
         _totalSupply = _totalSupply.sub(_shares);
 
         emit Transfer(msg.sender, address(0), _shares);
 
         // Check balance
+        // 获取合约地址在USDT上的余额
         uint256 b = IERC20(token).balanceOf(address(this));
         if (b < r) {
+            // r 在pool中拥有的量，b 合约地址拥有的USDT 量
+            // 通过外部函数指定 体现的池
             _withdrawSome(r.sub(b));
         }
-
+        // 从USDT 合约往发起用户体现
         IERC20(token).safeTransfer(msg.sender, r);
         pool = _calcPoolValueInToken();
     }
 
     function() external payable {
-
+        //直接transfor ETH 不做处理
     }
 
+    // 推荐
     function recommend() public view returns (Lender) {
         (,uint256 capr,uint256 iapr,uint256 aapr,uint256 dapr) = IIEarnManager(apr).recommend(token);
         uint256 max = 0;
@@ -239,7 +250,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         return newProvider;
     }
 
-    function supplyDydx(uint256 amount) public  {
+    function supplyDydx(uint256 amount) public {
         Info[] memory infos = new Info[](1);
         infos[0] = Info(address(this), 0);
 
@@ -287,7 +298,8 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         IERC20(token).safeApprove(compound, uint(- 1));
         //also add to constructor
         IERC20(token).safeApprove(dydx, uint(- 1));
-        IERC20(token).safeApprove(getAaveCore(), uint(- 1)); // aave 需要获取代理地址
+        IERC20(token).safeApprove(getAaveCore(), uint(- 1));
+        // aave 需要获取代理地址
         IERC20(token).safeApprove(fulcrum, uint(- 1));
     }
 
