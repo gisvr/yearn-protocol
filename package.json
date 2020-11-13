@@ -1,5 +1,6 @@
 {
     "name": "yearn-protocol",
+    "license": "MIT",
     "devDependencies": {
         "@openzeppelin/contracts": "^3.0.0",
         "@openzeppelin/contracts-ethereum-package": "^3.0.0",

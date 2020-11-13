@@ -133,7 +133,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         compound = address(0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9);
 
         dToken = 0; // 市场id
-        approveToken();
+//        approveToken();
     }
 
     // Ownable setters incase of support in future for these systems
@@ -239,7 +239,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         return newProvider;
     }
 
-    function supplyDydx(uint256 amount) public returns (uint) {
+    function supplyDydx(uint256 amount) public  {
         Info[] memory infos = new Info[](1);
         infos[0] = Info(address(this), 0);
 
@@ -287,7 +287,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         IERC20(token).safeApprove(compound, uint(- 1));
         //also add to constructor
         IERC20(token).safeApprove(dydx, uint(- 1));
-        // IERC20(token).safeApprove(getAaveCore(), uint(- 1)); aave 需要获取代理地址
+        IERC20(token).safeApprove(getAaveCore(), uint(- 1)); // aave 需要获取代理地址
         IERC20(token).safeApprove(fulcrum, uint(- 1));
     }
 
