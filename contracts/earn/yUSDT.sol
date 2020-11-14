@@ -17,7 +17,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 
-import "./ERC20.sol";
+import "../misc/ERC20.sol";
 import "../interfaces/compound.sol";
 import "../interfaces/aave.sol";
 import "../interfaces/fulcrum.sol";
