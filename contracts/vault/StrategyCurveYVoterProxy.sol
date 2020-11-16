@@ -13,6 +13,13 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
+import "../interfaces/curvefi.sol";
+import "../interfaces/Gauge.sol";
+import "../interfaces/Mintr.sol";
+import "../interfaces/yERC20.sol";
+import "../interfaces/uniswap.sol";
+//import "./CurveYCRVVoter.sol";
+//import "./StrategyProxy.sol";
 //
 interface IController {
     function withdraw(address, uint256) external;
@@ -30,75 +37,12 @@ interface IController {
     function strategies(address) external view returns (address);
 }
 
-//
-interface Gauge {
-    function deposit(uint256) external;
-
-    function balanceOf(address) external view returns (uint256);
-
-    function withdraw(uint256) external;
-}
-
-//
-interface Mintr {
-    function mint(address) external;
-}
-
-//
-interface Uni {
-    function swapExactTokensForTokens(
-        uint256,
-        uint256,
-        address[] calldata,
-        address,
-        uint256
-    ) external;
-}
-
-//
-interface ICurveFi {
-    function get_virtual_price() external view returns (uint256);
-
-    function add_liquidity(
-        // sBTC pool
-        uint256[3] calldata amounts,
-        uint256 min_mint_amount
-    ) external;
-
-    function add_liquidity(
-        // bUSD pool
-        uint256[4] calldata amounts,
-        uint256 min_mint_amount
-    ) external;
-
-    function remove_liquidity_imbalance(uint256[4] calldata amounts, uint256 max_burn_amount) external;
-
-    function remove_liquidity(uint256 _amount, uint256[4] calldata amounts) external;
-
-    function exchange(
-        int128 from,
-        int128 to,
-        uint256 _from_amount,
-        uint256 _min_to_amount
-    ) external;
-}
-
 interface Zap {
     function remove_liquidity_one_coin(
         uint256,
         int128,
         uint256
     ) external;
-}
-
-//
-// NOTE: Basically an alias for Vaults
-interface yERC20 {
-    function deposit(uint256 _amount) external;
-
-    function withdraw(uint256 _amount) external;
-
-    function getPricePerFullShare() external view returns (uint256);
 }
 
 //
@@ -220,7 +164,8 @@ contract StrategyCurveYVoterProxy {
 
         IERC20(want).safeTransfer(IController(controller).rewards(), _fee);
         address _vault = IController(controller).vaults(address(want));
-        require(_vault != address(0), "!vault"); // additional protection so we don't burn the funds
+        require(_vault != address(0), "!vault");
+        // additional protection so we don't burn the funds
 
         IERC20(want).safeTransfer(_vault, _amount.sub(_fee));
     }
@@ -233,7 +178,8 @@ contract StrategyCurveYVoterProxy {
         balance = IERC20(want).balanceOf(address(this));
 
         address _vault = IController(controller).vaults(address(want));
-        require(_vault != address(0), "!vault"); // additional protection so we don't burn the funds
+        require(_vault != address(0), "!vault");
+        // additional protection so we don't burn the funds
         IERC20(want).safeTransfer(_vault, balance);
     }
 
@@ -244,6 +190,7 @@ contract StrategyCurveYVoterProxy {
     function harvest() public {
         require(msg.sender == strategist || msg.sender == governance, "!authorized");
         VoterProxy(proxy).harvest(gauge);
+        //> StrategyProxy.harvest
         uint256 _crv = IERC20(crv).balanceOf(address(this));
         if (_crv > 0) {
             uint256 _keepCRV = _crv.mul(keepCRV).div(keepCRVMax);
@@ -279,6 +226,7 @@ contract StrategyCurveYVoterProxy {
             deposit();
         }
         VoterProxy(proxy).lock();
+        //> StrategyProxy.lock
     }
 
     function _withdrawSome(uint256 _amount) internal returns (uint256) {

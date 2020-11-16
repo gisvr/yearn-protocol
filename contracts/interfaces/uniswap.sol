@@ -14,3 +14,15 @@ interface IUniswapAPR {
 interface IUniswapFactory {
     function getExchange(address token) external view returns (address exchange);
 }
+
+
+//
+interface Uni {
+    function swapExactTokensForTokens(
+        uint256,
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external;
+}

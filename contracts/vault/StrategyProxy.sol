@@ -12,6 +12,10 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
+import "../interfaces/uniswap.sol";
+import "../interfaces/Mintr.sol";
+//import "./CurveYCRVVoter.sol";
+
 //
 interface Proxy {
     function execute(
@@ -21,11 +25,6 @@ interface Proxy {
     ) external returns (bool, bytes memory);
 
     function increaseAmount(uint256) external;
-}
-
-//
-interface Mintr {
-    function mint(address) external;
 }
 
 //
@@ -107,12 +106,16 @@ contract StrategyProxy {
         if (!success) assert(false);
     }
 
+    // 出发 proxy 执行mint 和 transfer
     function harvest(address _gauge) external {
         require(strategies[msg.sender], "!strategy");
         uint256 _before = IERC20(crv).balanceOf(address(proxy));
+        // 执行 crv的 mint
         proxy.execute(mintr, 0, abi.encodeWithSignature("mint(address)", _gauge));
         uint256 _after = IERC20(crv).balanceOf(address(proxy));
         uint256 _balance = _after.sub(_before);
+        // 将crv的余额体现
         proxy.execute(crv, 0, abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _balance));
+        //> CurveYCRVVoter.execute
     }
 }
