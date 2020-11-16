@@ -3,7 +3,7 @@
  https://etherscan.io/address/0xdD6d648C991f7d47454354f4Ef326b04025a48A8#code
  获取 不同资金池的年化利率
 */
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.16;
 
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";

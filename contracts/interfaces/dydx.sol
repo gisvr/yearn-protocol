@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 interface DyDx {
@@ -13,7 +13,7 @@ interface DyDx {
 
     function getEarningsRate() external view returns (val memory);
 
-    function getMarketInterestRate(uint256 marketId) external view returns (val memory);
+    function getMarketInterestRate(uint256 marketId) external view returns (val  memory);
 
     function getMarketTotalPar(uint256 marketId) external view returns (set memory);
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.16;
 interface Fulcrum {
     function mint(address receiver, uint256 amount) external payable returns (uint256 mintAmount);
 

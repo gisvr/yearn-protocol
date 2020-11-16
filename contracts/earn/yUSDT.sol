@@ -3,7 +3,7 @@
  https://etherscan.io/address/0x83f798e925bcd4017eb265844fddabb448f1707d#code
 */
 
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";

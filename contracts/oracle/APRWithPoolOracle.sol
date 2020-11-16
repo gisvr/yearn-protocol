@@ -3,7 +3,7 @@
  https://etherscan.io/address/0xeC3aDd301dcAC0e9B0B880FCf6F92BDfdc002BBc#code
 */
 
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
