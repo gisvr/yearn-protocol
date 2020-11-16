@@ -6,6 +6,7 @@
  *Submitted for verification at Etherscan.io on 2020-07-26
 
  https://etherscan.io/address/0x9e65ad11b299ca0abefc2799ddb6314ef2d91080#code
+
 */
 
 // SPDX-License-Identifier: MIT
@@ -118,6 +119,7 @@ contract Controller {
 
     function earn(address _token, uint _amount) public {
         address _strategy = strategies[_token];
+        //yUSDC 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 -> 0xA30d1D98C502378ad61Fe71BcDc3a808CF60b897
         address _want = Strategy(_strategy).want();
         //  -> StrategyCurveYVoterProxy.sol
         if (_want != _token) {

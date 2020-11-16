@@ -1,6 +1,13 @@
 /**
  *Submitted for verification at Etherscan.io on 2020-07-26
- https://etherscan.io/address/0x5dbcf33d8c2e976c6b560249878e6f1491bca25c#writeContract
+ https://etherscan.io/address/0x5dbcf33d8c2e976c6b560249878e6f1491bca25c#code
+ //yyDAI+yUSDC+yUSDT+yTUSD
+
+https://etherscan.io/address/0x597ad1e0c13bfe8025993d9e79c69e1c0233522e#code
+ // yUSDC
+
+ https://etherscan.io/address/0x29e240cfd7946ba20895a7a02edb25c210f9f324#code
+  // yaLink
 */
 
 pragma solidity ^0.5.16;
@@ -10,11 +17,12 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 
-interface Controller {
-    function withdraw(address, uint) external;
-    function balanceOf(address) external view returns (uint);
-    function earn(address, uint) external;
-}
+import "../interfaces/controller.sol";
+//interface Controller {
+//    function withdraw(address, uint) external;
+//    function balanceOf(address) external view returns (uint);
+//    function earn(address, uint) external;
+//}
 
 contract yVault is ERC20, ERC20Detailed {
     using SafeERC20 for IERC20;

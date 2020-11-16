@@ -12,8 +12,8 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
-import "../interfaces/uniswap.sol";
-import "../interfaces/Mintr.sol";
+import "../../../interfaces/uniswap.sol";
+import "../../../interfaces/Mintr.sol";
 //import "./CurveYCRVVoter.sol";
 
 //
@@ -33,7 +33,8 @@ contract StrategyProxy {
     using Address for address;
     using SafeMath for uint256;
 
-    Proxy public constant proxy = Proxy(0xF147b8125d2ef93FB6965Db97D6746952a133934);
+    Proxy public constant proxy = Proxy(0xF147b8125d2ef93FB6965Db97D6746952a133934); //CurvYCRVVoter.sol
+
     address public constant mintr = address(0xd061D61a4d941c39E5453435B6345Dc261C2fcE0);
     address public constant crv = address(0xD533a949740bb3306d119CC777fa900bA034cd52);
     address public constant gauge = address(0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB);

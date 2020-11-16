@@ -13,11 +13,11 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
-import "../interfaces/curvefi.sol";
-import "../interfaces/Gauge.sol";
-import "../interfaces/Mintr.sol";
-import "../interfaces/yERC20.sol";
-import "../interfaces/uniswap.sol";
+import "../../../interfaces/curvefi.sol";
+import "../../../interfaces/Gauge.sol";
+import "../../../interfaces/Mintr.sol";
+import "../../../interfaces/yERC20.sol";
+import "../../../interfaces/uniswap.sol";
 //import "./CurveYCRVVoter.sol";
 //import "./StrategyProxy.sol";
 //

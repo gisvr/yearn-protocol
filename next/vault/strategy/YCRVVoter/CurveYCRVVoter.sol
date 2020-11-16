@@ -1,7 +1,18 @@
 /**
  *Submitted for verification at Etherscan.io on 2020-08-24
  https://etherscan.io/address/0xf147b8125d2ef93fb6965db97d6746952a133934#code
+ 策略投票
+
+//mintr:   @title Token Minter //@author Curve Finance
+//Escrow： @title Voting Escrow  //@author Curve Finance
+//         @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
+//         @dev Vote weight decays linearly over time. Lock time cannot be  more than `MAXTIME` (4 years).
+//pool：   @title Liquidity Gauge //@author Curve Finance
+          //@notice Used for measuring liquidity and insurance
+//strategy： StrategyProxy
+//want： Curve.fi: yCrv Token //https://www.curve.fi/y
 */
+
 
 // SPDX-License-Identifier: MIT
 
@@ -11,18 +22,13 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
-import "../interfaces/uniswap.sol";
-import "../interfaces/Mintr.sol";
-import "../interfaces/curvefi.sol";
-import "../interfaces/Gauge.sol";
+import "../../../interfaces/uniswap.sol";
+import "../../../interfaces/Mintr.sol";
+import "../../../interfaces/curvefi.sol";
+import "../../../interfaces/Gauge.sol";
 
-import "../interfaces/yERC20.sol";
-
-interface Controller {
-    function vaults(address) external view returns (address);
-
-    function rewards() external view returns (address);
-}
+import "../../../interfaces/yERC20.sol";
+import "../../../interfaces/controller.sol";
 
 /*
 
