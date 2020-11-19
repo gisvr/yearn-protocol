@@ -438,6 +438,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         }
     }
 
+    // 移仓
     function rebalance() public {
         Lender newProvider = recommend();
 
@@ -445,6 +446,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
             _withdrawAll();
         }
 
+        // 获取 合约中USDT 的余额 移动到价格最合适的 合约中
         if (balance() > 0) {
             if (newProvider == Lender.DYDX) {
                 supplyDydx(balance());

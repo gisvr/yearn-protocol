@@ -19,38 +19,59 @@ contract IEarnAPRWithPool is Ownable {
 
     mapping(address => uint256) public pools; //池
     mapping(address => address) public compound;
-    mapping(address => address) public fulcrum;
+    mapping(address => address) public fulcrum; // bzx
     mapping(address => address) public aave;
     mapping(address => address) public aaveUni;
     mapping(address => uint256) public dydx;
     mapping(address => address) public yTokens;
 
     address public UNI;
-    address public UNIROI;
+    //    address public UNIROI;
     address public UNIAPR;
     address public APR;
 
     constructor() public {
         UNI = address(0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95);
-        UNIROI = address(0xD04cA0Ae1cd8085438FDd8c22A76246F315c2687);
+        //https://uniswap.org/docs/v1/frontend-integration/connect-to-uniswap
+        // UNIROI = address(0xD04cA0Ae1cd8085438FDd8c22A76246F315c2687); // Uniswap的投资回报率
         UNIAPR = address(0x4c70D89A4681b2151F56Dc2c3FD751aBb9CE3D95);
+        //对 Uniswap的ROI进行换算APR
+
         APR = address(0xeC3aDd301dcAC0e9B0B880FCf6F92BDfdc002BBc);
+        // APR的 Oracle
 
+        //(token, created)
         addPool(0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643, 9000629);
+        // cDAI CErc20Delegator
         addPool(0xF5DCe57282A584D2746FaF1593d3121Fcac444dC, 7723867);
+        // cDAI CErc20
         addPool(0x6B175474E89094C44Da98b954EedeAC495271d0F, 8939330);
+        // Dai Stablecoin
         addPool(0x0000000000085d4780B73119b644AE5ecd22b376, 7794100);
-        addPool(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 6783192);
-        addPool(0x57Ab1ec28D129707052df4dF418D58a2D46d5f51, 8623684);
-        addPool(0x0D8775F648430679A709E98d2b0Cb6250d2887EF, 6660894);
-        addPool(0x514910771AF9Ca656af840dff83E8264EcF986CA, 6627987);
-        addPool(0xdd974D5C2e2928deA5F71b9825b8b646686BD200, 6627984);
-        addPool(0x1985365e9f78359a9B6AD760e32412f4a445E862, 6627994);
-        addPool(0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2, 6627956);
-        addPool(0xE41d2489571d322189246DaFA5ebDe1F4699F498, 6627972);
-        addPool(0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F, 8314762);
-        addPool(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, 7004537);
+        // TUSD OwnedUpgradeabilityProxy uniswap crated block number
 
+        addPool(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 6783192);
+        // USDC FiatTokenProxy
+        addPool(0x57Ab1ec28D129707052df4dF418D58a2D46d5f51, 8623684);
+        // sUSD
+        addPool(0x0D8775F648430679A709E98d2b0Cb6250d2887EF, 6660894);
+        // BAT
+        addPool(0x514910771AF9Ca656af840dff83E8264EcF986CA, 6627987);
+        // LINK
+        addPool(0xdd974D5C2e2928deA5F71b9825b8b646686BD200, 6627984);
+        // KNC KyberNetworkCrystal
+        addPool(0x1985365e9f78359a9B6AD760e32412f4a445E862, 6627994);
+        // REP Reputation https://www.augur.net/
+        addPool(0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2, 6627956);
+        // Mu Maker DSToken
+        addPool(0xE41d2489571d322189246DaFA5ebDe1F4699F498, 6627972);
+        // ZRX  0x Protocol Token
+        addPool(0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F, 8314762);
+        // SNX Synthetix Network Token ProxyERC20
+        addPool(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, 7004537);
+        // WBTC
+
+        // (token,cToken)
         addCToken(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643);
         // cDAI
         addCToken(0x0D8775F648430679A709E98d2b0Cb6250d2887EF, 0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E);
@@ -64,6 +85,7 @@ contract IEarnAPRWithPool is Ownable {
         addCToken(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, 0xC11b1268C1A384e55C48c2391d8d480264A3A7F4);
         // cWBTC
 
+        // (atoken,aToken)
         addAToken(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x6B175474E89094C44Da98b954EedeAC495271d0F);
         // aDAI
         addAToken(0x0000000000085d4780B73119b644AE5ecd22b376, 0x0000000000085d4780B73119b644AE5ecd22b376);
@@ -83,6 +105,7 @@ contract IEarnAPRWithPool is Ownable {
         addAToken(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
         // aWBTC
 
+        //(atoken,aToken) Uni
         addAUniToken(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d);
         // aDAI
         addAUniToken(0x0000000000085d4780B73119b644AE5ecd22b376, 0x4DA9b813057D04BAef4e5800E36083717b4a0341);
@@ -93,6 +116,7 @@ contract IEarnAPRWithPool is Ownable {
         // aUSDT
 
 
+        // (token,iToken) bzx.network
         addIToken(0xE41d2489571d322189246DaFA5ebDe1F4699F498, 0xA7Eb2bc82df18013ecC2A6C533fc29446442EDEe);
         // iZRX
         addIToken(0x1985365e9f78359a9B6AD760e32412f4a445E862, 0xBd56E9477Fc6997609Cf45F84795eFbDAC642Ff1);
@@ -112,6 +136,7 @@ contract IEarnAPRWithPool is Ownable {
         addIToken(0x57Ab1ec28D129707052df4dF418D58a2D46d5f51, 0x49f4592E641820e928F9919Ef4aBd92a719B4b49);
         // iSUSD
 
+        //(token,index) //dydx
         addDToken(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE, 0);
         // dETH
         addDToken(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 2);
@@ -119,6 +144,7 @@ contract IEarnAPRWithPool is Ownable {
         addDToken(0x6B175474E89094C44Da98b954EedeAC495271d0F, 3);
         // dDAI
 
+        //(token,yTokens) yearn.finance
         addYToken(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x9D25057e62939D3408406975aD75Ffe834DA4cDd);
         // yDAI
         addYToken(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 0xa2609B2b43AC0F5EbE27deB944d2a399C201E3dA);
@@ -191,6 +217,7 @@ contract IEarnAPRWithPool is Ownable {
         uint256 _ddex,
         uint256 _lendf
     ) {
+        //查询 支持的资产 在uniswap 上创建的时间
         uint256 created = pools[_token];
 
         if (created > 0) {
@@ -308,9 +335,9 @@ contract IEarnAPRWithPool is Ownable {
         dydx[token] = dToken;
     }
 
-    function set_new_UNIROI(address _new_UNIROI) public onlyOwner {
-        UNIROI = _new_UNIROI;
-    }
+    //    function set_new_UNIROI(address _new_UNIROI) public onlyOwner {
+    //        UNIROI = _new_UNIROI;
+    //    }
 
     function set_new_UNI(address _new_UNI) public onlyOwner {
         UNI = _new_UNI;

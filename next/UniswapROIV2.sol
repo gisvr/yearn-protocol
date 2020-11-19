@@ -1,5 +1,8 @@
 /**
  *Submitted for verification at Etherscan.io on 2020-01-26
+ https://etherscan.io/address/0xD04cA0Ae1cd8085438FDd8c22A76246F315c2687#code
+ APR -> ROI
+
 */
 
 pragma solidity ^0.5.0;
@@ -17,7 +20,7 @@ interface IUniswapExchange {
     function totalSupply() external view returns (uint256);
 }
 
-contract UniswapAPR is Ownable {
+contract UniswapROI is Ownable {
     using SafeMath for uint;
     using Address for address;
 
@@ -81,6 +84,7 @@ contract UniswapAPR is Ownable {
 
     constructor() public {
         UNI = address(0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95);
+        // UniswapV2Factory
 
         CDAI = address(0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643);
         CBAT = address(0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E);
@@ -293,6 +297,7 @@ contract UniswapAPR is Ownable {
     }
 
     function calcUniswapROI(address token) public view returns (uint256, uint256) {
+        // https://github.com/Uniswap/uniswap-v2-core
         IUniswapFactory factory = IUniswapFactory(UNI);
         IUniswapExchange exchange = IUniswapExchange(factory.getExchange(token));
 

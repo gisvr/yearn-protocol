@@ -18,7 +18,7 @@ interface APRWithPoolOracle {
 
 }
 
-// YToken的借口
+// YToken的 接口
 interface IYToken {
     function calcPoolValueInToken() external view returns (uint256);
     function decimals() external view returns (uint256);

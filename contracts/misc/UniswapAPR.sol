@@ -13,6 +13,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 
 import "../interfaces/uniswap.sol";
+import "../../next/vault/yDelegatedVault.sol";
 
 contract UniswapAPR is Ownable {
     using SafeMath for uint;
@@ -37,8 +38,9 @@ contract UniswapAPR is Ownable {
     uint256 public blocksPerYear;
 
     constructor() public {
+        //uniswap v1 创建交易所的时间
         ADAICreateAt = 9248529;
-        CDAICreateAt = 9000629;
+        CDAICreateAt = 9000629; //https://etherscan.io/tx/0xe7c444a2a01e3dc086aa9954bab62159972468d0a40f7d4c062105b13261653c
         CETHCreateAt = 7716382;
         CSAICreateAt = 7723867;
         CUSDCCreateAt = 7869920;
@@ -46,14 +48,17 @@ contract UniswapAPR is Ownable {
         IDAICreateAt = 8975121;
         ISAICreateAt = 8362506;
         SUSDCreateAt = 8623684;
-        TUSDCreateAt = 7794100;
+        TUSDCreateAt = 7794100; //https://etherscan.io/tx/0x201cc63a10057e4739b806fe6e57c038fd61b03c0d17c4fd43bbeafccc9343e1
         USDCCreateAt = 6783192;
         CHAICreateAt = 9028682;
 
+        // 计算收益的地址
         UNIROI = address(0xD04cA0Ae1cd8085438FDd8c22A76246F315c2687);
+
+        // Uniswap V1 (UNI-V1) CHAI的echange
         CHAI = address(0x6C3942B383bc3d0efd3F36eFa1CBE7C8E12C8A2B);
         // Uniswap V1 (UNI-V1)
-        blocksPerYear = 2102400;
+        blocksPerYear = 2102400; // 1年的秒数/ 15秒出块 = 31536000/15
     }
 
 
@@ -150,7 +155,12 @@ contract UniswapAPR is Ownable {
         // ROI returned as shifted 1e4
         (uint256 roi,) = IUniswapROI(UNIROI).calcUniswapROI(token);
         uint256 roiFrom = block.number.sub(createdAt);
+        // roi 是产生一块产生到收益。 这个收益是 uni
+        // mul(1e15） 因为 roi里面已经mul了1000=》 roi 进位为 eth小数位
+        // mul(blocksPerYear) 将roi放大到一年到每一块上。
+        // div(roiFrom) 将按年的收益分配到 创建依赖的块收益山。
         uint256 baseAPR = roi.mul(1e15).mul(blocksPerYear).div(roiFrom);
+        // 调整   blocksPerYear/roiFrom =》
         uint256 adjusted = blocksPerYear.mul(1e18).div(roiFrom);
         return baseAPR.add(1e18).sub(adjusted);
     }
