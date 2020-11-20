@@ -121,6 +121,7 @@ contract yDAI is ERC20, ERC20Detailed, ReentrancyGuard, Structs {
         fulcrum = address(0x493C57C4763932315A328269E1ADaD09653B9081);
         aaveToken = address(0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d);
         compound = address(0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643);
+        // dxdy的市场ID
         dToken = 3;
         approveToken();
     }
@@ -215,8 +216,10 @@ contract yDAI is ERC20, ERC20Detailed, ReentrancyGuard, Structs {
         Info[] memory infos = new Info[](1);
         infos[0] = Info(address(this), 0);
 
+        // 定义资产的Amount
         AssetAmount memory amt = AssetAmount(true, AssetDenomination.Wei, AssetReference.Delta, amount);
         ActionArgs memory act;
+        // 定义操作行为
         act.actionType = ActionType.Deposit;
         act.accountId = 0;
         act.amount = amt;

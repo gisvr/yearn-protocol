@@ -122,7 +122,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         dydx = address(0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e);
         //LendingPoolAddressesProvider
         aave = address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8);
-        // Fulcrum USDC iToken iUSDC
+        // Fulcrum USDC iToken iUSDC // bzx.network
         fulcrum = address(0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f);
         // AToken-》 aUSDT
         aaveToken = address(0x71fc860F7D3A592A4a98740e39dB31d25db65ae8);
@@ -131,8 +131,8 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
         // Compound USDT -》cUSDT
         compound = address(0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9);
 
-        dToken = 0;
-        // 市场id
+        dToken = 0; //0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+        //dydx  市场id
         //  approveToken();
     }
 
@@ -241,7 +241,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
 
         Lender newProvider = Lender.NONE;
         if (max == capr) {
-            newProvider = Lender.COMPOUND;
+            newProvider = Lender.COMPOUND; // compound
         } else if (max == iapr) {
             newProvider = Lender.FULCRUM;
         } else if (max == aapr) {
