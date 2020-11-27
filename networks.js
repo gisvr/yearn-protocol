@@ -1,4 +1,4 @@
-const {projectId, adminKey} = require('../secrets.json');
+const {projectId, adminKey} = require('/Users/liyu/Desktop/key/secrets.json');
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 module.exports = {
     networks: {

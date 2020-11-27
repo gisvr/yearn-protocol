@@ -209,7 +209,7 @@ contract APRWithPoolOracle is Ownable, Structs {
 
     // 调整收益率 - 可操作的量
     function getCompoundAPRAdjusted(address token, uint256 _supply) public view returns (uint256) {
-        Compound c = (token);
+        Compound c = Compound(token);
         // * @notice返回此cToken的当前每块供应利率
         //* @返回每块的供应利率，按1e18缩放
         address model = Compound(token).interestRateModel();

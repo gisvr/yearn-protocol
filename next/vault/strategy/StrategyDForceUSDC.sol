@@ -1,5 +1,6 @@
 /**
  *Submitted for verification at Etherscan.io on 2020-08-13
+ https://etherscan.io/address/0xA30d1D98C502378ad61Fe71BcDc3a808CF60b897#code
 */
 
 // SPDX-License-Identifier: MIT
@@ -38,7 +39,7 @@ contract StrategyDForceUSDC {
 
     address constant public want = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48); // USDC
     address constant public dusdc = address(0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179);
-    address constant public pool = address(0xB71dEFDd6240c45746EC58314a01dd6D833fD3b5);
+    address constant public pool = address(0xB71dEFDd6240c45746EC58314a01dd6D833fD3b5); // Unipool
     address constant public df = address(0x431ad2ff6a9C365805eBaD47Ee021148d6f7DBe0);
     address constant public uni = address(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
     address constant public weth = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2); // used for df <> weth <> usdc route
@@ -59,16 +60,19 @@ contract StrategyDForceUSDC {
         controller = _controller;
     }
 
+    // 社区设置 strategist
     function setStrategist(address _strategist) external {
         require(msg.sender == governance, "!governance");
         strategist = _strategist;
     }
 
+    // 社区设置退出fee
     function setWithdrawalFee(uint _withdrawalFee) external {
         require(msg.sender == governance, "!governance");
         withdrawalFee = _withdrawalFee;
     }
 
+    // 业绩提成 fee
     function setPerformanceFee(uint _performanceFee) external {
         require(msg.sender == governance, "!governance");
         performanceFee = _performanceFee;
@@ -76,16 +80,26 @@ contract StrategyDForceUSDC {
 
     function deposit() public {
         uint _want = IERC20(want).balanceOf(address(this));
+
+        // 1 用USDC的余额 铸造 dUSDC
         if (_want > 0) {
             IERC20(want).safeApprove(dusdc, 0);
             IERC20(want).safeApprove(dusdc, _want);
+            //    /**
+            //     * @dev Deposit token to earn savings, but only when the contract is not paused.
+            //     * @param _dst Account who will get dToken.
+            //     * @param _pie Amount to deposit, scaled by 1e18.
+            //     */
             dERC20(dusdc).mint(address(this), _want);
         }
 
+        // 2 将 dUSDC 进行挖矿
         uint _dusdc = IERC20(dusdc).balanceOf(address(this));
+        // 有了抵押哦的ducdc 可以进行流动性挖矿
         if (_dusdc > 0) {
             IERC20(dusdc).safeApprove(pool, 0);
             IERC20(dusdc).safeApprove(pool, _dusdc);
+
             dRewards(pool).stake(_dusdc);
         }
 
@@ -153,6 +167,7 @@ contract StrategyDForceUSDC {
             path[1] = weth;
             path[2] = want;
 
+            // 在uni 中 提现
             Uni(uni).swapExactTokensForTokens(_df, uint(0), path, address(this), now.add(1800));
         }
         uint _want = IERC20(want).balanceOf(address(this));
@@ -193,9 +208,9 @@ contract StrategyDForceUSDC {
     }
 
     function balanceOf() public view returns (uint) {
-        return balanceOfWant()
-        .add(balanceOfDUSDC())
-        .add(balanceOfPool());
+        return balanceOfWant()  // 对应合约的余额
+        .add(balanceOfDUSDC()) // Dtoken 的余额
+        .add(balanceOfPool()); // 挖矿池中的余额
     }
 
     function setGovernance(address _governance) external {

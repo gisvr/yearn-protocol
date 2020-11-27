@@ -224,7 +224,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
 
     // 推荐
     function recommend() public view returns (Lender) {
-        (,uint256 capr,uint256 iapr,uint256 aapr,uint256 dapr) = IIEarnManager(apr).recommend(token);
+        (,uint256 capr,uint256 iapr,a aapr,uint256 dapr) = IIEarnManager(apr).recommend(token);
         uint256 max = 0;
         if (capr > max) {
             max = capr;
